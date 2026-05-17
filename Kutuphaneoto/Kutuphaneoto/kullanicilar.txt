@@ -1,0 +1,2 @@
+admin|admin123|Sistem Yöneticisi|Yönetici
+gorkem|gorkem123|gorkem k|Personel

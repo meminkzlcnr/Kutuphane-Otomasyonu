@@ -67,5 +67,12 @@ namespace Kutuphaneoto
 
             this.Show();
         }
+        private void buttonKullaniciYon_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            FrmKullaniciYonetimi frm = new FrmKullaniciYonetimi();
+            frm.ShowDialog();
+            this.Show();
+        }
     }
 }

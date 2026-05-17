@@ -1,8 +1,10 @@
+using System.IO;
+
 namespace Kutuphaneoto
 {
     public partial class FrmGirisEkrani : Form
     {
-        // program açýlýrkenki giriþ ekraný. kullanýcý adý ve þifre alýnýr.
+        // Program aÃ§Ä±lÄ±nca giriÅŸ ekranÄ± gelir. KullanÄ±cÄ± adÄ± ve ÅŸifre alÄ±nÄ±r.
         public FrmGirisEkrani()
         {
             InitializeComponent();
@@ -10,24 +12,46 @@ namespace Kutuphaneoto
 
         private void girisbutton_Click(object sender, EventArgs e)
         {
-            string kullaniciAdi = textBoxKullaniciadi.Text;              // girdiðimiz kullanýcý adýný alýr
-            string sifre = textBoxSifre.Text;                            // girdiðimiz þifreyi alýr
+            string kullaniciAdi = textBoxKullaniciadi.Text;
+            string sifre = textBoxSifre.Text;
 
-            if (kullaniciAdi == "admin" && sifre == "admin123")          // kullanýcý adý ve þifre doðru mu diye bakar  
+            if (GirisDogrula(kullaniciAdi, sifre))
             {
-                FrmAnaMenu frmAnaMenu = new FrmAnaMenu();                // doðru ise ana forma geçiþ yapar
+                FrmAnaMenu frmAnaMenu = new FrmAnaMenu();
                 frmAnaMenu.Show();
-                this.Hide();                                             // Giriþ ekranýný gizler.
+                this.Hide();
             }
             else
             {
                 MessageBox.Show(
-                    "Kullanýcý adý veya þifre hatalý!",                   // kullanýcý adý veya þifre hatalý ise
-                    "Hatalý Giriþ",                                        // hatalý giriþ yaptýnýz der.
+                    "KullanÄ±cÄ± adÄ± veya ÅŸifre hatalÄ±!",
+                    "HatalÄ± GiriÅŸ",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
             }
+        }
+
+        // kullanicilar.txt dosyasÄ±ndan giriÅŸ doÄŸrulamasÄ± yapar.
+        // Dosya yoksa varsayÄ±lan admin/admin123 ile giriÅŸ yapÄ±lÄ±r.
+        bool GirisDogrula(string kullaniciAdi, string sifre)
+        {
+            if (!File.Exists("kullanicilar.txt"))
+            {
+                return kullaniciAdi == "admin" && sifre == "admin123";
+            }
+
+            string[] satirlar = File.ReadAllLines("kullanicilar.txt");
+
+            foreach (string satir in satirlar)
+            {
+                string[] p = satir.Split('|');
+                // format: KullaniciAdi|Sifre|AdSoyad|Rol
+                if (p.Length >= 2 && p[0] == kullaniciAdi && p[1] == sifre)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -33,6 +33,7 @@
             buttonOduncİade = new Button();
             buttonİstatistik = new Button();
             buttonLogKay = new Button();
+            buttonKullaniciYon = new Button();
             SuspendLayout();
             // 
             // buttonKitapYon
@@ -95,17 +96,30 @@
             buttonLogKay.UseVisualStyleBackColor = false;
             buttonLogKay.Click += buttonLogKay_Click;
             // 
+            // buttonKullaniciYon
+            // 
+            buttonKullaniciYon.BackColor = Color.FromArgb(255, 128, 0);
+            buttonKullaniciYon.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 162);
+            buttonKullaniciYon.Location = new Point(86, 620);
+            buttonKullaniciYon.Name = "buttonKullaniciYon";
+            buttonKullaniciYon.Size = new Size(311, 83);
+            buttonKullaniciYon.TabIndex = 5;
+            buttonKullaniciYon.Text = "Kullanıcı Yönetimi";
+            buttonKullaniciYon.UseVisualStyleBackColor = false;
+            buttonKullaniciYon.Click += buttonKullaniciYon_Click;
+            // 
             // FrmAnaMenu
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Cornsilk;
-            ClientSize = new Size(768, 639);
+            ClientSize = new Size(768, 750);
             Controls.Add(buttonLogKay);
             Controls.Add(buttonİstatistik);
             Controls.Add(buttonOduncİade);
             Controls.Add(buttonOgrenciYon);
             Controls.Add(buttonKitapYon);
+            Controls.Add(buttonKullaniciYon);
             Name = "FrmAnaMenu";
             Text = "Ana Menü";
             ResumeLayout(false);
@@ -118,5 +132,6 @@
         private Button buttonOduncİade;
         private Button buttonİstatistik;
         private Button buttonLogKay;
+        private Button buttonKullaniciYon;
     }
 }
