@@ -17,21 +17,27 @@ namespace Kutuphaneoto
             InitializeComponent();
         }
 
-        private void buttonGeriOdunc_Click(object sender, EventArgs e)         // butona tıklayınca önceki sayfaya döner
+        private void buttonGeriOdunc_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void btnOduncVer_Click(object sender, EventArgs e)             // ödünç verme butonuna tıklayınca
+        private void btnOduncVer_Click(object sender, EventArgs e)
         {
-            FrmOduncVer frm = new FrmOduncVer();                                // ödünç verme formuna geçer
+            FrmOduncVer frm = new FrmOduncVer();
             frm.ShowDialog();
-
         }
 
-        private void btnIadeAl_Click(object sender, EventArgs e)                // iade alma butonuna tıklayınca 
+        private void btnIadeAl_Click(object sender, EventArgs e)
         {
-            FrmIadeAl frm = new FrmIadeAl();                                     // iade alma formuna geçer
+            FrmIadeAl frm = new FrmIadeAl();
+            frm.ShowDialog();
+        }
+
+        // ── YENİ: Gecikmiş İadeler butonu ──
+        private void btnGecikmisList_Click(object sender, EventArgs e)
+        {
+            FrmGecikmisList frm = new FrmGecikmisList();
             frm.ShowDialog();
         }
     }

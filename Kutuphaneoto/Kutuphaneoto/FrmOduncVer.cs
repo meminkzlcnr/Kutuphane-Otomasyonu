@@ -11,7 +11,6 @@ using Kutuphaneoto.DataStructures;
 using Kutuphaneoto.Models;
 using System.IO;
 
-
 namespace Kutuphaneoto
 {
     public partial class FrmOduncVer : Form
@@ -28,43 +27,31 @@ namespace Kutuphaneoto
 
         private void FrmOduncVer_Load(object sender, EventArgs e)
         {
-            OgrencileriYukle();                                             // form çalışırken fonksiyonları çalıştırır
+            OgrencileriYukle();
             OgrenciListesiniDoldur();
             KitaplariYukle();
             KitapListesiniDoldur();
-            foreach (var kitap in kitaplar.TumunuGetir())
-            {
-                listBoxKitaplar.Items.Add(kitap);
-            }
             OduncleriYukle();
             BeklemeSiralariniYukle();
-
-
-
         }
-        void OgrenciListesiniDoldur()                               // program çalışırken listbox daki öğrencileri doldurur
-        {   
+
+        void OgrenciListesiniDoldur()
+        {
             listBoxOgrenciler.Items.Clear();
-
             foreach (var ogr in ogrenciler.TumunuGetir())
-            {
                 listBoxOgrenciler.Items.Add(ogr);
-            }
         }
-        void KitapListesiniDoldur()                                    // program çalışırken kitap listbox ını doldurur
+
+        void KitapListesiniDoldur()
         {
             listBoxKitaplar.Items.Clear();
-
             foreach (var kitap in kitaplar.TumunuGetir())
-            {
                 listBoxKitaplar.Items.Add(kitap);
-            }
         }
 
         private void listBoxOgrenciler_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBoxOgrenciler.SelectedItem == null)
-                return;
+            if (listBoxOgrenciler.SelectedItem == null) return;
 
             Ogrenci secilen = (Ogrenci)listBoxOgrenciler.SelectedItem;
 
@@ -72,141 +59,112 @@ namespace Kutuphaneoto
             txtSecilenAdSoyad.Text = secilen.AdSoyad;
 
             listBoxOgrenciKitaplar.Items.Clear();
-
             foreach (var kitap in secilen.UzerindekiKitaplar)
-            {
                 listBoxOgrenciKitaplar.Items.Add(kitap);
-            }
         }
-        void OgrencileriYukle()                                             // program çalışırken öğrencileri yükler
+
+        void OgrencileriYukle()
         {
-            if (!File.Exists("ogrenciler.txt"))
-                return;
+            if (!File.Exists("ogrenciler.txt")) return;
 
-            string[] satirlar = File.ReadAllLines("ogrenciler.txt");
-
-            foreach (string satir in satirlar)
+            foreach (string satir in File.ReadAllLines("ogrenciler.txt"))
             {
                 string[] p = satir.Split('|');
-
                 if (p.Length == 6)
                 {
-                    Ogrenci ogr = new Ogrenci(
-                        p[0], // ogr no
-                        p[1], // ad soyad
-                        p[2], // bolum
-                        p[3], // fakulte
-                        p[4], // sinif
-                        DateTime.Parse(p[5])
-                    );
-
-                    ogrenciler.Ekle(ogr);
+                    ogrenciler.Ekle(new Ogrenci(p[0], p[1], p[2], p[3], p[4], DateTime.Parse(p[5])));
                 }
             }
         }
 
-        private void txtOgrenciAra_TextChanged(object sender, EventArgs e)                  // öğrenci araması yapar
+        private void txtOgrenciAra_TextChanged(object sender, EventArgs e)
         {
             string aranan = txtOgrenciAra.Text.ToLower();
-
             listBoxOgrenciler.Items.Clear();
 
             foreach (var ogr in ogrenciler.TumunuGetir())
             {
-                if (
-                    ogr.OgrenciNo.ToLower().Contains(aranan) ||
-                    ogr.AdSoyad.ToLower().Contains(aranan)
-                )
-                {
+                if (ogr.OgrenciNo.ToLower().Contains(aranan) ||
+                    ogr.AdSoyad.ToLower().Contains(aranan))
                     listBoxOgrenciler.Items.Add(ogr);
-                }
             }
         }
-         
-        private void txtKitapAra_TextChanged(object sender, EventArgs e)          // kitap araması yapar
+
+        private void txtKitapAra_TextChanged(object sender, EventArgs e)
         {
             string aranan = txtKitapAra.Text.ToLower();
             listBoxKitaplar.Items.Clear();
 
             foreach (var kitap in kitaplar.TumunuGetir())
             {
-                if (
-                    kitap.KitapAdi.ToLower().Contains(aranan) ||
-                    kitap.Yazar.ToLower().Contains(aranan)
-                )
-                {
+                if (kitap.KitapAdi.ToLower().Contains(aranan) ||
+                    kitap.Yazar.ToLower().Contains(aranan))
                     listBoxKitaplar.Items.Add(kitap);
-                }
             }
         }
 
         private void listBoxKitaplar_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBoxKitaplar.SelectedItem == null)
-                return;
+            if (listBoxKitaplar.SelectedItem == null) return;
 
-            Kitap secilen = (Kitap)listBoxKitaplar.SelectedItem;                  // listboxtan seçilen kitabın bilgilerini texboxlara atar
+            Kitap secilen = (Kitap)listBoxKitaplar.SelectedItem;
 
             txtSecilenKitapAdi.Text = secilen.KitapAdi;
             txtSecilenYazar.Text = secilen.Yazar;
             txtSecilenISBN.Text = secilen.ISBN;
             txtSecilenKategori.Text = secilen.Kategori;
-
         }
-        void KitaplariYukle()                                                 // program çalışırken kitapları yükler
+
+        void KitaplariYukle()
         {
-            if (!File.Exists("kitaplar.txt"))
-                return;
+            if (!File.Exists("kitaplar.txt")) return;
 
-            string[] satirlar = File.ReadAllLines("kitaplar.txt");
-
-            foreach (string satir in satirlar)
+            foreach (string satir in File.ReadAllLines("kitaplar.txt"))
             {
                 string[] p = satir.Split('|');
-
                 if (p.Length == 4)
-                {
-                    Kitap kitap = new Kitap(
-                        p[0], // kitap adı
-                        p[1], // yazar
-                        p[2], // ISBN
-                        p[3]  // kategori
-                    );
-
-                    kitaplar.Ekle(kitap);
-                }
+                    kitaplar.Ekle(new Kitap(p[0], p[1], p[2], p[3]));
             }
         }
 
-        private void btnOduncVer_Click(object sender, EventArgs e)                                             
+        private void btnOduncVer_Click(object sender, EventArgs e)
         {
-            if (listBoxOgrenciler.SelectedItem == null || listBoxKitaplar.SelectedItem == null)             // odunc ver butonuna tıklayınca 
+            if (listBoxOgrenciler.SelectedItem == null || listBoxKitaplar.SelectedItem == null)
             {
-                MessageBox.Show("Lütfen öğrenci ve kitap seçin.");                                          // ogrenci seçilmemişse uyarı verir
+                MessageBox.Show("Lütfen öğrenci ve kitap seçin.");
                 return;
             }
 
             Ogrenci ogrenci = (Ogrenci)listBoxOgrenciler.SelectedItem;
             Kitap kitap = (Kitap)listBoxKitaplar.SelectedItem;
 
-            // 1️. Max 3 kitap kontrolü
-            if (ogrenci.UzerindekiKitaplar.Count >= 3)                                                      
+            // Max 3 kitap kontrolü
+            if (ogrenci.UzerindekiKitaplar.Count >= 3)
             {
                 MessageBox.Show("Bu öğrenci en fazla 3 kitap alabilir.");
                 return;
             }
 
-            // 2️. Kitap alınmış mı kontrolü
+            // Kitap müsait mi kontrolü
             if (!kitap.OduncAlinmis)
             {
                 kitap.OduncAlinmis = true;
                 ogrenci.UzerindekiKitaplar.Add(kitap);
 
-                OduncKaydet(ogrenci, kitap); // ✅ SADECE BURADA
+                OduncKaydet(ogrenci, kitap);
 
-                MessageBox.Show("Kitap başarıyla ödünç verildi.");
-                LogStack.LogEkle($"Kitap ödünç alındı: {kitap.KitapAdi} - {ogrenci.AdSoyad}");
+                // ── YENİ: Son iade tarihini göster ──
+                MessageBox.Show(
+                    $"Kitap başarıyla ödünç verildi.\n\n" +
+                    $"Alış Tarihi   : {kitap.AlisTarihi:dd.MM.yyyy}\n" +
+                    $"Son İade Tarihi: {kitap.SonIadeTarihi:dd.MM.yyyy}\n\n" +
+                    $"Süre: 15 gün",
+                    "Ödünç Verildi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
 
+                LogStack.LogEkle($"Kitap ödünç alındı: {kitap.KitapAdi} - {ogrenci.AdSoyad} (İade: {kitap.SonIadeTarihi:dd.MM.yyyy})");
             }
             else
             {
@@ -216,16 +174,14 @@ namespace Kutuphaneoto
                 );
             }
 
-            //  güncelleme
             listBoxOgrenciler_SelectedIndexChanged(null, null);
-
         }
 
-        private void btnSirayaEkle_Click(object sender, EventArgs e)                               // rezervasyon kuyruğuna ekleme butonuna basılınca 
+        private void btnSirayaEkle_Click(object sender, EventArgs e)
         {
-            if (listBoxOgrenciler.SelectedItem == null || listBoxKitaplar.SelectedItem == null)       // öğrenci ve kitap seçilmiş mi kontrol edilir
+            if (listBoxOgrenciler.SelectedItem == null || listBoxKitaplar.SelectedItem == null)
             {
-                MessageBox.Show("Lütfen öğrenci ve kitap seçin.");                                      // seçilmemişse  uyarı verir
+                MessageBox.Show("Lütfen öğrenci ve kitap seçin.");
                 return;
             }
 
@@ -234,89 +190,113 @@ namespace Kutuphaneoto
 
             if (!kitap.OduncAlinmis)
             {
-                MessageBox.Show("Bu kitap şu an müsait. Ödünç verebilirsiniz.");                    // kitabı alan yoksa kitağ müasit der.
+                MessageBox.Show("Bu kitap şu an müsait. Ödünç verebilirsiniz.");
                 return;
             }
-                
-            if (kitap.BeklemeSirasi.Contains(ogrenci))                                              // öğrenci bekleme sırasındaysa önceden uyarı verir
-            {   
+
+            if (kitap.BeklemeSirasi.Contains(ogrenci))
+            {
                 MessageBox.Show("Bu öğrenci zaten bekleme sırasında.");
                 return;
             }
 
             kitap.BekleyenOgrenciNolari.Enqueue(ogrenci.OgrenciNo);
-            BeklemeSiralariniKaydet();                                                          // bekleme sıralarını kaydeder
-
+            BeklemeSiralariniKaydet();
 
             MessageBox.Show(
-                "Öğrenci bekleme sırasına eklendi.\n" +
-                $"Bekleyen kişi sayısı: {kitap.BeklemeSirasi.Count}"                            // sıra bilgisini gösterir
+                $"Öğrenci bekleme sırasına eklendi.\n" +
+                $"Sıra numaranız: {kitap.BekleyenOgrenciNolari.Count}"
             );
-            LogStack.LogEkle($"Kitap meşgul olduğu için öğrenci kuyruğa eklendi: {ogrenci.AdSoyad}");       // stack e log ekler
+            LogStack.LogEkle($"Kuyruğa eklendi: {ogrenci.AdSoyad} → {kitap.KitapAdi}");
+        }
 
+        // ── Dosya İşlemleri ───────────────────────────────────────────
 
-        }   
-        void OduncKaydet(Ogrenci ogr, Kitap kitap)                                              // ödünçleri kaydeder
+        void OduncKaydet(Ogrenci ogr, Kitap kitap)
         {
-            using (StreamWriter sw = new StreamWriter("oduncler.txt", true))
-            {
-                sw.WriteLine($"{ogr.OgrenciNo}|{kitap.ISBN}");
-            }
+            // ── YENİ: Tarihleri ata (15 günlük süre) ──
+            kitap.AlisTarihi = DateTime.Now;
+            kitap.SonIadeTarihi = DateTime.Now.AddDays(15);
+
+            // Tüm aktif ödünçleri tarihlerle birlikte yeniden yaz
+            TumOduncleriKaydet();
+
+            // İstatistik geçmişine ekle (format değişmedi)
             using (StreamWriter sw = new StreamWriter("odunc_gecmisi.txt", true))
             {
                 sw.WriteLine($"{ogr.OgrenciNo}|{kitap.ISBN}");
             }
-        }   
-        void OduncleriYukle()                                                               // ödünçleri program başlayınca yukleme fonksiyonudur
-        {
-            if (!File.Exists("oduncler.txt"))
-                return;
-
-            string[] satirlar = File.ReadAllLines("oduncler.txt");
-
-            foreach (string satir in satirlar)
-            {
-                string[] p = satir.Split('|');
-                if (p.Length != 2) continue;
-
-                string ogrNo = p[0];
-                string isbn = p[1];
-
-                Ogrenci ogr = ogrenciler.TumunuGetir().FirstOrDefault(o => o.OgrenciNo == ogrNo);
-
-
-                Kitap kitap = kitaplar.TumunuGetir().FirstOrDefault(k => k.ISBN == isbn);
-
-
-                if (ogr != null && kitap != null)
-                {
-                    kitap.OduncAlinmis = true;
-                    ogr.UzerindekiKitaplar.Add(kitap);
-                }
-            }
         }
 
-        private void btnGeriodver_Click(object sender, EventArgs e)                 // önceki sayfaya döner
+        void TumOduncleriKaydet()
         {
-            this.Close();
-        }
-        void BeklemeSiralariniKaydet()                                              // bekleme sıralarını kaydeden fonksiyondur
-        {
-            using (StreamWriter sw = new StreamWriter("bekleme.txt"))
+            using (StreamWriter sw = new StreamWriter("oduncler.txt"))
             {
-                foreach (var kitap in kitaplar.TumunuGetir())
+                foreach (var ogr in ogrenciler.TumunuGetir())
                 {
-                    foreach (var ogrNo in kitap.BekleyenOgrenciNolari)
+                    foreach (var kitap in ogr.UzerindekiKitaplar)
                     {
-                        sw.WriteLine($"{kitap.ISBN}|{ogrNo}");
+                        string alis    = kitap.AlisTarihi?.ToString("dd.MM.yyyy")    ?? DateTime.Now.ToString("dd.MM.yyyy");
+                        string sonIade = kitap.SonIadeTarihi?.ToString("dd.MM.yyyy") ?? DateTime.Now.AddDays(15).ToString("dd.MM.yyyy");
+                        sw.WriteLine($"{ogr.OgrenciNo}|{kitap.ISBN}|{alis}|{sonIade}");
                     }
                 }
             }
         }
-        void BeklemeSiralariniYukle()                             // program başlayınca bekleme sıralarını yukleyen fonksiyondur
+
+        void OduncleriYukle()
         {
-            if (!File.Exists("bekleme.txt"))
-                return;
+            if (!File.Exists("oduncler.txt")) return;
+
+            foreach (string satir in File.ReadAllLines("oduncler.txt"))
+            {
+                string[] p = satir.Split('|');
+                if (p.Length < 2) continue;
+
+                Ogrenci ogr   = ogrenciler.TumunuGetir().FirstOrDefault(o => o.OgrenciNo == p[0]);
+                Kitap   kitap = kitaplar.TumunuGetir().FirstOrDefault(k => k.ISBN == p[1]);
+
+                if (ogr != null && kitap != null)
+                {
+                    kitap.OduncAlinmis = true;
+
+                    // ── YENİ: Tarihleri yükle ──
+                    if (p.Length >= 4)
+                    {
+                        kitap.AlisTarihi    = DateTime.Parse(p[2]);
+                        kitap.SonIadeTarihi = DateTime.Parse(p[3]);
+                    }
+                    else
+                    {
+                        // Eski format → varsayılan tarih ata
+                        kitap.AlisTarihi    = DateTime.Now;
+                        kitap.SonIadeTarihi = DateTime.Now.AddDays(15);
+                    }
+
+                    if (!ogr.UzerindekiKitaplar.Contains(kitap))
+                        ogr.UzerindekiKitaplar.Add(kitap);
+                }
+            }
+        }
+
+        private void btnGeriodver_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        void BeklemeSiralariniKaydet()
+        {
+            using (StreamWriter sw = new StreamWriter("bekleme.txt"))
+            {
+                foreach (var kitap in kitaplar.TumunuGetir())
+                    foreach (var ogrNo in kitap.BekleyenOgrenciNolari)
+                        sw.WriteLine($"{kitap.ISBN}|{ogrNo}");
+            }
+        }
+
+        void BeklemeSiralariniYukle()
+        {
+            if (!File.Exists("bekleme.txt")) return;
 
             foreach (string satir in File.ReadAllLines("bekleme.txt"))
             {
@@ -328,7 +308,5 @@ namespace Kutuphaneoto
                     kitap.BekleyenOgrenciNolari.Enqueue(p[1]);
             }
         }
-
-
     }
 }
