@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,15 +11,28 @@ using Kutuphaneoto.Models;
 using Kutuphaneoto.DataStructures;
 using System.IO;
 
-
 namespace Kutuphaneoto
 {
-    // kitap ekle kitap sil gibi işlemleri yaptığımız kitap yönetimi formumuzdur
     public partial class FrmKitapYonetimi : Form
     {
+        private string kullaniciRolu = "Ogrenci"; 
+
+        public FrmKitapYonetimi(string rol)
+        {
+            InitializeComponent();
+            kullaniciRolu = rol;
+        }
+
+        public FrmKitapYonetimi()
+        {
+            InitializeComponent();
+        }
+
         void DosyayaKaydet()
         {
-            using (StreamWriter sw = new StreamWriter("kitaplar.txt"))                              // eklediğimiz kitapları dosyaya kaydeder
+            if (kullaniciRolu == "Ogrenci") return;
+
+            using (StreamWriter sw = new StreamWriter("kitaplar.txt"))
             {
                 foreach (var kitap in kitaplar.TumunuGetir())
                 {
@@ -28,18 +41,18 @@ namespace Kutuphaneoto
             }
         }
 
-        void DosyadanYukle()                                                   // önceden kaydetiğimiz kitapları yükler
+        void DosyadanYukle()
         {
-            if (!File.Exists("kitaplar.txt"))                                   // "kitaplar.txt" dosyası yoksa bir şey yapmaz
+            if (!File.Exists("kitaplar.txt"))
                 return;
 
-            string[] satirlar = File.ReadAllLines("kitaplar.txt");               // liste varsa okur 
+            string[] satirlar = File.ReadAllLines("kitaplar.txt");
 
             foreach (string satir in satirlar)
             {
                 string[] parcalar = satir.Split('|');
 
-                if (parcalar.Length == 4)                                    
+                if (parcalar.Length == 4)                                     
                 {
                     Kitap kitap = new Kitap(
                         parcalar[0],
@@ -48,38 +61,35 @@ namespace Kutuphaneoto
                         parcalar[3]
                     );
 
-                    kitaplar.Ekle(kitap);                                    // kitapları ekler
+                    kitaplar.Ekle(kitap);
                 }
             }
         }
+        
         KitapLinkedList kitaplar = new KitapLinkedList();
 
-        public FrmKitapYonetimi()
-        {
-            InitializeComponent();
-        }
-
-        private void buttonGeriKitap_Click(object sender, EventArgs e)             // geri butonuna basınca önceki forma geçer
+        private void buttonGeriKitap_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void btnKitapEkle_Click(object sender, EventArgs e)                 // kitap ekle butonuna tıklayınca 
+        private void btnKitapEkle_Click(object sender, EventArgs e)
         {
-            Kitap yeniKitap = new Kitap(                                            // yeni kitap oluşturur bilgileri atar
+            Kitap yeniKitap = new Kitap(
                 txtKitapAdi.Text,
-                txtYazar.Text,                                                      
+                txtYazar.Text,                                                       
                 txtISBN.Text,
                 txtKategori.Text
             );
 
-            kitaplar.Ekle(yeniKitap);                                               // kitabı ekler
-            ListeyiGuncelle();                                                       // kitap listesini günceller
-            LogStack.LogEkle("Yeni kitap eklendi: " + yeniKitap.KitapAdi);            // kitap eklendi diye log kaydını alır + kitap adını yazar
+            kitaplar.Ekle(yeniKitap);
+            ListeyiGuncelle();
+            LogStack.LogEkle("Yeni kitap eklendi: " + yeniKitap.KitapAdi);
 
-            Temizle();                                                               // temizle fonk çalıştırır. fonk kitap adı vs değişkenlerini temizler
+            Temizle();
         }
-        void ListeyiGuncelle()                                                     // kitap ekledikten sonra ya da silindikten sonra listeyi günceller
+        
+        void ListeyiGuncelle()
         {
             listBoxKitaplar.Items.Clear();
 
@@ -91,65 +101,89 @@ namespace Kutuphaneoto
 
         void Temizle()
         {
-            txtKitapAdi.Clear();                       // yeni kitap ekleyebilmek şiçin txtkitap vs değişkenlerini temizler
+            txtKitapAdi.Clear();
             txtYazar.Clear();
             txtISBN.Clear();
             txtKategori.Clear();
         }
-        private void txtKitapAra_TextChanged_1(object sender, EventArgs e)    // textbox kitap ara ile kitap arar 
+        
+        private void txtKitapAra_TextChanged_1(object sender, EventArgs e)
         {
-            string aranan = txtKitapAra.Text.ToLower();                       // aramaya yazdığımız kitabı büyük harfe çevirir arar
+            string aranan = txtKitapAra.Text.ToLower().Trim();
             listBoxKitaplar.Items.Clear();
 
             foreach (var kitap in kitaplar.TumunuGetir())
             {
-                if (kitap.KitapAdi.ToLower().Contains(aranan))
+                if (kitap.KitapAdi.ToLower().Contains(aranan) ||
+                    kitap.Yazar.ToLower().Contains(aranan) ||
+                    kitap.ISBN.ToLower().Contains(aranan) ||
+                    kitap.Kategori.ToLower().Contains(aranan))
                 {
                     listBoxKitaplar.Items.Add(kitap);
                 }
             }
         }
-        private void listBoxKitaplar_SelectedIndexChanged_1(object sender, EventArgs e)    
+        
+        private void listBoxKitaplar_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (listBoxKitaplar.SelectedItem != null)                                      // listbox da tıkladğımız kitabı 
+            if (listBoxKitaplar.SelectedItem != null)
             {
                 Kitap secilen = (Kitap)listBoxKitaplar.SelectedItem;
-                txtSecilenKitap.Text = secilen.ToString();                                  // secilenkitap textbox una yazar
-            }
 
+                txtSecilenKitap.Text = $"📖 Kitap Adı: {secilen.KitapAdi}\r\n" +
+                                       $"✍️ Yazarı: {secilen.Yazar}\r\n" +
+                                       $"🆔 ISBN No: {secilen.ISBN}\r\n" +
+                                       $"🗂️ Kategorisi: {secilen.Kategori}";
+            }
         }
 
-        private void btnKitapSil_Click(object sender, EventArgs e)                    // kitap sil butonuna tıkladığımızda 
+        private void btnKitapSil_Click(object sender, EventArgs e)
         {
-            if (listBoxKitaplar.SelectedItem != null)                                 // kitap seçildi mi diye kontrol eder eğer seçilmişse
+            if (listBoxKitaplar.SelectedItem != null)
             {
                 Kitap secilen = (Kitap)listBoxKitaplar.SelectedItem;
 
-                kitaplar.Sil(secilen.ISBN);                                         // kitabı siler
+                kitaplar.Sil(secilen.ISBN);
 
-                ListeyiGuncelle();                                                  // ve listeyi günceller
-                LogStack.LogEkle("Kitap silindi: " + secilen.KitapAdi);             // log kaydı alır :"kitap silindi + kitabına dı"
+                ListeyiGuncelle();
+                LogStack.LogEkle("Kitap silindi: " + secilen.KitapAdi);
 
-                txtSecilenKitap.Clear();                                            // secilen kitap textbox değişkenini temizler
+                txtSecilenKitap.Clear();
             }
             else
             {
-                MessageBox.Show("Lütfen silinecek kitabı seçin.");                  // kitap seçilmemişse uyarı mesaji verir
+                MessageBox.Show("Lütfen silinecek kitabı seçin.");
             }
-
         }
 
-        private void FrmKitapYonetimi_Load(object sender, EventArgs e)          // kitap yönetimi çalışırken
+        private void FrmKitapYonetimi_Load(object sender, EventArgs e)
         {
-            DosyadanYukle();                                                    // dosyadan yukle fonk çağırır
-            ListeyiGuncelle();                                                  // listeyi güncelle fonk çağırır
+            txtSecilenKitap.Height = 120;
+
+            DosyadanYukle();
+            ListeyiGuncelle();
+
+            if (kullaniciRolu == "Ogrenci")
+            {
+                btnKitapEkle.Visible = false;
+                btnKitapSil.Visible = false;
+                
+                txtKitapAdi.Visible = false;
+                txtYazar.Visible = false;
+                txtISBN.Visible = false;
+                txtKategori.Visible = false;
+
+                this.Text = "Kütüphane Otomasyonu - Öğrenci Kitap Arama ve Listeleme";
+            }
+            else
+            {
+                this.Text = "Kütüphane Otomasyonu - Yönetici Paneli";
+            }
         }
 
-        private void FrmKitapYonetimi_FormClosing(object sender, FormClosingEventArgs e)        // form kapatılırken
+        private void FrmKitapYonetimi_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DosyayaKaydet();                                                                    // değişiklikleri dosyaya kaydeder
+            DosyayaKaydet();
         }
     }
 }
-
-
