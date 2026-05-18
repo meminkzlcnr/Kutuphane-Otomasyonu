@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,63 +10,72 @@ using System.Windows.Forms;
 
 namespace Kutuphaneoto
 {
-    // kitap ve öğrenci yönetimi, ödünç iade, istatistikler, log kayıtlarına geçmemizi sağlayan ana formumuzdur.
     public partial class FrmAnaMenu : Form
     {
+        private string girenRol = "Ogrenci";
+
+        public FrmAnaMenu(string rol)
+        {
+            InitializeComponent();
+            girenRol = rol;
+        }
+
         public FrmAnaMenu()
         {
             InitializeComponent();
         }
 
-        private void buttonKitapYon_Click(object sender, EventArgs e)            // kitap yonetimi butonuna tıklayınca 
+        private void FrmAnaMenu_Load(object sender, EventArgs e)
         {
-            this.Hide();                                                         // ana formu gilzer
+            if (girenRol == "Ogrenci")
+            {
+                buttonOgrenciYon.Visible = false;
+                buttonLogKay.Visible = false;
+                buttonKullaniciYon.Visible = false;
+                buttonİstatistik.Visible = false;
+            }
+        }
 
-            FrmKitapYonetimi frm = new FrmKitapYonetimi();                       // kitap yönetimi formunu açar
+        private void buttonKitapYon_Click(object sender, EventArgs e) 
+        {
+            this.Hide(); 
+            FrmKitapYonetimi frm = new FrmKitapYonetimi(girenRol); 
             frm.ShowDialog();
-
             this.Show();
         }
         
-        private void buttonOgrenciYon_Click(object sender, EventArgs e)           // öğrenci yönetimi butonuna tıklayınca
-        {                                                                          
-            this.Hide();                                                          // ana formu gizler          
-
-            FrmOgrenciYonetimi frm = new FrmOgrenciYonetimi();                    // öğrenci yönetimi formunu açar
+        private void buttonOgrenciYon_Click(object sender, EventArgs e)
+        {                                                                         
+            this.Hide();                                                          
+            FrmOgrenciYonetimi frm = new FrmOgrenciYonetimi(); 
             frm.ShowDialog();
-
             this.Show();    
         }
 
-        private void buttonOduncİade_Click(object sender, EventArgs e)           // ödünç ve iade işlemleri butonuna tıklayınca
+        private void buttonOduncİade_Click(object sender, EventArgs e) 
         {
-            this.Hide();                                                         // ana formu gizler   
-
-            FrmOduncIade frm = new FrmOduncIade();                                // odunç ve iade işlemleri formunu açar  
+            this.Hide();   
+            FrmOduncIade frm = new FrmOduncIade();                                 
             frm.ShowDialog();
-
             this.Show();
         }
 
-        private void buttonİstatistik_Click(object sender, EventArgs e)            // istatistikler butonuna tıklayınca
+        private void buttonİstatistik_Click(object sender, EventArgs e) 
         {
-            this.Hide();                                                            // ana formu gizler
-
-            FrmIstatistikler frm = new FrmIstatistikler();                          // istatistikler formunu açar
+            this.Hide(); 
+            FrmIstatistikler frm = new FrmIstatistikler(); 
             frm.ShowDialog();
-
             this.Show();
         }
 
-        private void buttonLogKay_Click(object sender, EventArgs e)                // log kayıtları butonuna tıklayınca 
+        private void buttonLogKay_Click(object sender, EventArgs e) 
         {
-            this.Hide();                                                            // ana formu gizler
-
-            FrmLogKayitlari frm = new FrmLogKayitlari();                            // log kayıtları formunu açar
+            this.Hide(); 
+            FrmLogKayitlari frm = new FrmLogKayitlari(); 
             frm.ShowDialog();
-
             this.Show();
         }
+
         private void buttonKullaniciYon_Click(object sender, EventArgs e)
         {
             this.Hide();
