@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Kutuphaneoto
 {
@@ -12,12 +14,19 @@ namespace Kutuphaneoto
 
         private void girisbutton_Click(object sender, EventArgs e)
         {
-            string kullaniciAdi = textBoxKullaniciadi.Text;
-            string sifre = textBoxSifre.Text;
+            string kullaniciAdi = textBoxKullaniciadi.Text.Trim();
+            string sifre = textBoxSifre.Text.Trim();
 
-            if (GirisDogrula(kullaniciAdi, sifre))
+            // Giriş doğrulaması yaparken aynı zamanda kullanıcının rolünü de alıyoruz
+            string rol = RoluGetir(kullaniciAdi, sifre);
+
+            if (rol != null) // rol null değilse giriş başarılı demektir
             {
-                FrmAnaMenu frmAnaMenu = new FrmAnaMenu();
+                MessageBox.Show($"{rol} Girişi Başarılı!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // ── YETKİLENDİRME BURADA YAPILIYOR ──
+                // Ana menüyü açarken giriş yapan kişinin rolünü (Admin veya Ogrenci) gönderiyoruz
+                FrmAnaMenu frmAnaMenu = new FrmAnaMenu(rol);
                 frmAnaMenu.Show();
                 this.Hide();
             }
@@ -32,13 +41,17 @@ namespace Kutuphaneoto
             }
         }
 
-        // kullanicilar.txt dosyasından giriş doğrulaması yapar.
-        // Dosya yoksa varsayılan admin/admin123 ile giriş yapılır.
-        bool GirisDogrula(string kullaniciAdi, string sifre)
+        // Giriş yapan kullanıcının rolünü (Admin/Ogrenci) döndürür, hatalıysa null döndürür.
+        string RoluGetir(string kullaniciAdi, string sifre)
         {
+            // Dosya yoksa varsayılan olarak admin kontrolü yap ve rolü "Admin" olarak döndür
             if (!File.Exists("kullanicilar.txt"))
             {
-                return kullaniciAdi == "admin" && sifre == "admin123";
+                if (kullaniciAdi == "admin" && sifre == "admin123")
+                {
+                    return "Admin";
+                }
+                return null;
             }
 
             string[] satirlar = File.ReadAllLines("kullanicilar.txt");
@@ -46,12 +59,14 @@ namespace Kutuphaneoto
             foreach (string satir in satirlar)
             {
                 string[] p = satir.Split('|');
-                // format: KullaniciAdi|Sifre|AdSoyad|Rol
-                if (p.Length >= 2 && p[0] == kullaniciAdi && p[1] == sifre)
-                    return true;
+                // Format: KullaniciAdi|Sifre|AdSoyad|Rol
+                if (p.Length >= 4 && p[0] == kullaniciAdi && p[1] == sifre)
+                {
+                    return p[3].Trim(); // Dosyadaki 4. parçayı (Rol: Admin, Ogrenci vb.) döndürür
+                }
             }
 
-            return false;
+            return null; // Dosyada bulunamadıysa
         }
     }
 }
