@@ -1,2 +1,5 @@
-admin|admin123|Sistem Yöneticisi|Yönetici
-gorkem|gorkem123|gorkem k|Personel
+admin|admin123|Sistem Yöneticisi|Admin
+gorkem|gorkem123|Görkem K.|Personel
+240601044|123456|Muhammed Emin|Ogrenci
+250601005|123456|Ceylin Azra|Ogrenci
+250601089|123456|Hasan Kadri|Ogrenci
